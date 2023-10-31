@@ -30,5 +30,5 @@ class User(Base):
     )
     name: str = Column(String(25), unique=True, index=True, nullable=False)
     avatar: str = Column(String(150), nullable=True)
-    user_type: Enum = Column(Enum(UserTypesEnum), default=UserTypesEnum.USER, nullable=True)
+    user_type: Enum = Column(Enum(UserTypesEnum), default=UserTypesEnum.USER)
     password_hash: str = Column(String(60), nullable=False)

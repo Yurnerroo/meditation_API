@@ -1,14 +1,9 @@
 import logging
 from typing import Any
 
-from fastapi_pagination import Page, Params
-from fastapi_pagination.ext.async_sqlalchemy import paginate
-from sqlalchemy import func, BooleanClauseList
 from sqlalchemy.exc import ArgumentError, DataError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import aliased
-from sqlalchemy.sql import and_, or_
 
 from auth.users import get_password_hash, verify_password
 from db.crud.base_crud import BaseCrud
@@ -32,31 +27,25 @@ class UserCrud(BaseCrud[User, UserCreate, UserUpdate]):
 
         return result.scalar_one_or_none()
 
-    async def create_user(self, user: UserCreate) -> User | dict[str, Any]:
+    async def create_user(self, user: UserCreate) -> User | dict[str, str]:
         try:
             db_user = User(
                 name=user.name,
                 avatar=user.avatar,
                 user_type=user.user_type,
                 password_hash=get_password_hash(user.password),
-
             )
             self.db.add(db_user)
             await self.db.flush()
             return db_user
-        except IntegrityError as ie:
-            if "foreign key constraint" in str(ie.orig):
-                return {"error": "Invalid Country ID or Language ID."}
-            else:
-                return {"error": "Database integrity error."}
-        except ArgumentError as ae:
-            # Handle invalid arguments error
+        except IntegrityError:
+            return {"error": "Database integrity error."}
+        except ArgumentError:
             return {"error": "Invalid Argument passed."}
-        except DataError as de:
+        except DataError:
             # Handle data related error like wrong type or length of a field
-            return {"error": "Invalid Data passed."}
+            return {"error": "Invalid data passed."}
         except Exception as e:
-            # General catch all for other exceptions
             return {"error": str(e)}
 
     async def update(

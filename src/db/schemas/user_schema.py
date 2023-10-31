@@ -18,7 +18,6 @@ def password_size(v: str):
 class UserBase(BaseModel):
     name: str = Field(..., min_length=3, max_length=25)
     avatar: str | None = None
-    user_type: str | None = None
 
     @validator("name")
     def name_alphanumeric(cls, v):
@@ -28,6 +27,7 @@ class UserBase(BaseModel):
 
 class UserRead(UserBase):
     id: int
+    user_type: str | None = None
 
     class Config:
         orm_mode = True
@@ -44,6 +44,7 @@ class UserCreate(UserBase):
 # All these fields are optional
 class UserUpdate(BaseModel):
     name: str | None = None
+    avatar: str | None = None
     password: str | None = None
 
     @validator("name")

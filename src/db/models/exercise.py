@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy import Column, Integer, String, DateTime, func, ForeignKey
 
 from .base import Base
 
@@ -15,5 +15,6 @@ class Exercise(Base):
         index=True,
     )
     text: str = Column(String(1000), nullable=False)
-    photo: str = Column(String(200), nullable=False)
-    time: DateTime = Column(DateTime, nullable=False, server_default=func.now())
+    photo: str = Column(String(200), nullable=True)
+    time: DateTime = Column(DateTime, nullable=False)
+    owner: int = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)

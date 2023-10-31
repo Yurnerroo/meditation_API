@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from api.deps import (
     CurrentUser,
-    UserCrudSession, CurrentSuperUser,
+    UserCrudSession,
 )
 from auth.jwthandler import create_access_token
 from db.schemas.user_schema import UserCreate, UserRead, UserReadResponse
@@ -20,22 +20,19 @@ router = APIRouter()
 async def create_user(
     user: UserCreate,
     user_crud: UserCrudSession,
-    current_user: CurrentSuperUser,
 ):
     """
     Create new user.
     """
-    db_user = await user_crud.get_by_username_or_email(
-        username=user.username, email=user.email
-    )
+    db_user = await user_crud.get_by_name(name=user.name)
     if db_user:
         raise HTTPException(
-            status_code=400, detail="Username or email already registered"
+            status_code=400, detail="Username already registered"
         )
 
     result = await user_crud.create_user(user)
 
-    # check if any error returnde from db
+    # check if any error returned from db
     if isinstance(result, dict):
         raise HTTPException(status_code=400, detail=result)
 
