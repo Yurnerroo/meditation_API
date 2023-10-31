@@ -1,0 +1,11 @@
+__pycache__/
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+env/
+venv/
+.venv/
+*.db
+.env
+.coverage
