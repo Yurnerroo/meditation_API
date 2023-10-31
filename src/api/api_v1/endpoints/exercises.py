@@ -53,8 +53,8 @@ async def update_exercise(
 
 @router.get("/all/")
 async def get_exercises_for_user(
-        current_user: CurrentActiveUser,
-        exercise_crud: ExerciseCrudSession,
+    current_user: CurrentActiveUser,
+    exercise_crud: ExerciseCrudSession,
 ):
     return await exercise_crud.get_exercises_by_owner(owner=current_user.id)
 

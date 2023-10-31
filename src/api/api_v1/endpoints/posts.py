@@ -6,7 +6,8 @@ from db.schemas.post_schema import (
     PostCreate,
     PostRead,
     PostReadResponse,
-    PostUpdate, PostAdminUpdate,
+    PostUpdate,
+    PostAdminUpdate,
     PostAdminCreate,
 )
 

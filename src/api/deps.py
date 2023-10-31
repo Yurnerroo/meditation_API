@@ -20,4 +20,3 @@ CurrentSuperUser = Annotated[User, Depends(get_current_active_superuser)]
 UserCrudSession = Annotated[UserCrud, Depends(get_user_crud)]
 ExerciseCrudSession = Annotated[ExerciseCrud, Depends(get_exercise_crud)]
 PostCrudSession = Annotated[PostCrud, Depends(get_post_crud)]
-

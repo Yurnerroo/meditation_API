@@ -27,7 +27,6 @@ def init_logger(
     if log_level is None:
         log_level = settings.LOG_LEVEL.upper()
 
-
     logger = logging.getLogger(app_name)
     logger.setLevel(log_level)
 

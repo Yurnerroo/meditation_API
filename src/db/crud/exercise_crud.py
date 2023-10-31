@@ -6,7 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.crud.base_crud import BaseCrud
 from db.models.exercise import Exercise
 from db.models.user import User, UserTypesEnum
-from db.schemas.exercise_schema import ExerciseCreate, ExerciseUpdate, ExerciseReadResponse
+from db.schemas.exercise_schema import (
+    ExerciseCreate,
+    ExerciseUpdate,
+    ExerciseReadResponse,
+)
 from settings import settings
 
 
@@ -16,9 +20,9 @@ class ExerciseCrud(BaseCrud[Exercise, ExerciseCreate, ExerciseUpdate]):
         super().__init__(model=Exercise, db_session=db_session)
 
     async def create_exercise(
-            self,
-            exercise_in: ExerciseCreate,
-            current_user: User,
+        self,
+        exercise_in: ExerciseCreate,
+        current_user: User,
     ) -> Exercise:
         db_exercise = Exercise(
             text=exercise_in.text,
@@ -32,15 +36,12 @@ class ExerciseCrud(BaseCrud[Exercise, ExerciseCreate, ExerciseUpdate]):
         return db_exercise
 
     async def get_exercises_by_owner(
-            self,
-            owner: int,
+        self,
+        owner: int,
     ) -> list[ExerciseReadResponse]:
-        query = (
-            select(self.model)
-            .where(
-                self.model.owner == owner,          # type: ignore
-                self.model.time > datetime.now(),   # type: ignore
-            )
+        query = select(self.model).where(
+            self.model.owner == owner,  # type: ignore
+            self.model.time > datetime.now(),  # type: ignore
         )
 
         result = (await self.db.execute(query)).all()
@@ -50,7 +51,8 @@ class ExerciseCrud(BaseCrud[Exercise, ExerciseCreate, ExerciseUpdate]):
                 text=exercise[1],
                 photo=exercise[2],
                 time=exercise[3],
-            ) for exercise in result
+            )
+            for exercise in result
         ]
 
     async def get_daily_exercise(self) -> ExerciseReadResponse:

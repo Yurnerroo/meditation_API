@@ -25,4 +25,3 @@ class ExerciseRead(ExerciseBase):
 
 class ExerciseReadResponse(ExerciseRead):
     pass
-

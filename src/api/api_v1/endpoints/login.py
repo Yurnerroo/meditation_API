@@ -26,9 +26,7 @@ async def create_user(
     """
     db_user = await user_crud.get_by_name(name=user.name)
     if db_user:
-        raise HTTPException(
-            status_code=400, detail="Username already registered"
-        )
+        raise HTTPException(status_code=400, detail="Username already registered")
 
     result = await user_crud.create_user(user)
 
@@ -61,11 +59,3 @@ async def login_access_token(
         ),
         "token_type": "bearer",
     }
-
-
-@router.post("/test-token", response_model=UserRead)
-def test_token(current_user: CurrentUser) -> Any:
-    """
-    Test access token
-    """
-    return current_user

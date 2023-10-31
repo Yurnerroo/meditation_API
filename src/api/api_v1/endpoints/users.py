@@ -70,7 +70,7 @@ async def search_users_paginated(
     return await user_crud.search_users_paginated(
         params=params,
         searched_substr=searched_substr,
-        created_by_user_id=current_user.id
+        created_by_user_id=current_user.id,
     )
 
 

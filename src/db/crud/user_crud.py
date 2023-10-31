@@ -73,4 +73,3 @@ class UserCrud(BaseCrud[User, UserCreate, UserUpdate]):
     @staticmethod
     def is_superuser(user: User) -> bool:
         return user.user_type == UserTypesEnum.ADMIN
-

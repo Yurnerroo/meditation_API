@@ -71,6 +71,10 @@ class UserFilter(BaseModel):
         None, example="Username", description="Searched substring in the user name"
     )
     avatar: str | None = Field(
-        None, example="Avatar image link", description="Searched substring in the avatar link"
+        None,
+        example="Avatar image link",
+        description="Searched substring in the avatar link",
     )
-    user_type: UserTypesEnum | None = Field(None, example="user", description="User Type")
+    user_type: UserTypesEnum | None = Field(
+        None, example="user", description="User Type"
+    )

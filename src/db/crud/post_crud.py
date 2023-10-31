@@ -12,9 +12,9 @@ class PostCrud(BaseCrud[Post, PostCreate, PostUpdate]):
         super().__init__(model=Post, db_session=db_session)
 
     async def create_post(
-            self,
-            post_in: PostCreate,
-            current_user: User,
+        self,
+        post_in: PostCreate,
+        current_user: User,
     ) -> Post:
         db_post = Post(
             title=post_in.title,
@@ -28,9 +28,9 @@ class PostCrud(BaseCrud[Post, PostCreate, PostUpdate]):
         return db_post
 
     async def create_post_admin(
-            self,
-            post_in: PostAdminCreate,
-            current_user: User,
+        self,
+        post_in: PostAdminCreate,
+        current_user: User,
     ) -> Post:
         db_post = Post(
             title=post_in.title,
