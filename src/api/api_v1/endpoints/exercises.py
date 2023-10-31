@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from api.deps import ExerciseCrudSession
+from api.deps import ExerciseCrudSession, CurrentActiveUser, CurrentSuperUser
 from db.schemas.exercise_schema import (
     ExerciseCreate,
     ExerciseRead,
@@ -49,3 +49,16 @@ async def update_exercise(
         db_exercise=exercise,
         exercise_in=exercise_in,
     )
+
+
+@router.get("/all/")
+async def get_exercises_for_user(
+        current_user: CurrentActiveUser,
+        exercise_crud: ExerciseCrudSession,
+):
+    return await exercise_crud.get_exercises_by_owner(owner=current_user.id)
+
+
+@router.get("/daily/")
+async def get_daily_exercise(exercise_crud: ExerciseCrudSession):
+    return await exercise_crud.get_daily_exercise()

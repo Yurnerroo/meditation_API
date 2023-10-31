@@ -8,8 +8,6 @@ class PostBase(BaseModel):
     title: str = Field(min_length=3, max_length=150)
     photo: str | None = None
     description: str | None = None
-    owner: int
-    status: PostStatusesEnum | None = None
 
 
 class PostCreate(PostBase):
@@ -29,4 +27,17 @@ class PostRead(PostBase):
 
 
 class PostReadResponse(PostRead):
+    pass
+
+
+# Schemas for Admin
+class PostAdminBase(PostBase):
+    status: PostStatusesEnum | None = None
+
+
+class PostAdminCreate(PostAdminBase):
+    pass
+
+
+class PostAdminUpdate(PostAdminBase):
     pass

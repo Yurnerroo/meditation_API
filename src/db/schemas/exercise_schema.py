@@ -6,7 +6,6 @@ class ExerciseBase(BaseModel):
     text: str = Field(min_length=3, max_length=1000)
     time: datetime
     photo: str | None = None
-    owner: int
 
 
 class ExerciseCreate(ExerciseBase):

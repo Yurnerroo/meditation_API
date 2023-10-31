@@ -1,7 +1,6 @@
 import logging
 from typing import Any
 
-from sqlalchemy.exc import ArgumentError, DataError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -27,26 +26,26 @@ class UserCrud(BaseCrud[User, UserCreate, UserUpdate]):
 
         return result.scalar_one_or_none()
 
-    async def create_user(self, user: UserCreate) -> User | dict[str, str]:
-        try:
-            db_user = User(
-                name=user.name,
-                avatar=user.avatar,
-                user_type=user.user_type,
-                password_hash=get_password_hash(user.password),
-            )
-            self.db.add(db_user)
-            await self.db.flush()
-            return db_user
-        except IntegrityError:
-            return {"error": "Database integrity error."}
-        except ArgumentError:
-            return {"error": "Invalid Argument passed."}
-        except DataError:
-            # Handle data related error like wrong type or length of a field
-            return {"error": "Invalid data passed."}
-        except Exception as e:
-            return {"error": str(e)}
+    async def create_admin_user(self, user: UserCreate) -> User:
+        db_user = User(
+            name=user.name,
+            avatar=user.avatar,
+            password_hash=get_password_hash(user.password),
+            user_type=UserTypesEnum.ADMIN,
+        )
+        self.db.add(db_user)
+        await self.db.flush()
+        return db_user
+
+    async def create_user(self, user: UserCreate) -> User:
+        db_user = User(
+            name=user.name,
+            avatar=user.avatar,
+            password_hash=get_password_hash(user.password),
+        )
+        self.db.add(db_user)
+        await self.db.flush()
+        return db_user
 
     async def update(
         self, *, db_obj: User, obj_in: UserUpdate | dict[str, Any]
