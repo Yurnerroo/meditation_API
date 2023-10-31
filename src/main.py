@@ -3,7 +3,10 @@ import asyncio
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import sys
+from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent))
 from api.api_v1.api import api_router
 from db.init.init_db import init_db
 from logger import get_uvicorn_log_config, init_logger
