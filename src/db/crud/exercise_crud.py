@@ -55,7 +55,7 @@ class ExerciseCrud(BaseCrud[Exercise, ExerciseCreate, ExerciseUpdate]):
             for exercise in result
         ]
 
-    async def get_daily_exercise(self) -> ExerciseReadResponse:
+    async def get_daily_exercise(self) -> ExerciseReadResponse | None:
         query = (
             select(self.model)
             .join(User, self.model.owner == User.id)  # type: ignore
@@ -71,4 +71,4 @@ class ExerciseCrud(BaseCrud[Exercise, ExerciseCreate, ExerciseUpdate]):
             text=result[1],
             photo=result[2],
             time=result[3],
-        )
+        ) if result else None

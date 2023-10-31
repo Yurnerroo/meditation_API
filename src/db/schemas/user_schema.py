@@ -68,13 +68,11 @@ class UserUpdateMe(BaseModel):
 
 class UserFilter(BaseModel):
     name: str | None = Field(
-        None, example="Username", description="Searched substring in the user name"
-    )
-    avatar: str | None = Field(
         None,
-        example="Avatar image link",
-        description="Searched substring in the avatar link",
+        example="Username",
+        description="Searched substring in the user name"
     )
     user_type: UserTypesEnum | None = Field(
-        None, example="user", description="User Type"
+        None, example="user",
+        description="User Type"
     )

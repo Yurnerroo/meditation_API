@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from api.api_v1.endpoints.users import FORBIDDEN
 from api.deps import PostCrudSession, CurrentActiveUser, CurrentSuperUser
+from db.models.post import Post
 from db.schemas.post_schema import (
     PostCreate,
     PostRead,
     PostReadResponse,
     PostUpdate,
     PostAdminUpdate,
-    PostAdminCreate,
+    PostAdminCreate, PostFilter,
 )
 
 router = APIRouter()
@@ -84,4 +85,18 @@ async def update_post_admin(
     return await post_crud.update(
         db_obj=post,
         obj_in=post_in,
+    )
+
+
+@router.get("/", response_model=list[PostReadResponse] | None)
+async def get_all_posts(
+    post_crud: PostCrudSession,
+    posts_filter: PostFilter = Depends(),
+) -> list[PostReadResponse] | None:
+    """
+    Retrieve all users.
+    """
+    return await post_crud.get_all_posts_ordered(
+        posts_filter=posts_filter,
+        order_by=Post.time,
     )

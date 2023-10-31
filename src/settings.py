@@ -33,7 +33,6 @@ class Settings(BaseSettings):
 
     FIRST_SUPERUSER_NAME: str
     FIRST_SUPERUSER_PASSWORD: str
-    FIRST_SUPERUSER_EMAIL: str
 
     INIT_DB_IF_NOT_INITIALIZED: bool = False
 

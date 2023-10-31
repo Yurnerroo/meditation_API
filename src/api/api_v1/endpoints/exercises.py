@@ -59,6 +59,6 @@ async def get_exercises_for_user(
     return await exercise_crud.get_exercises_by_owner(owner=current_user.id)
 
 
-@router.get("/daily/")
+@router.get("/daily/", response_model=ExerciseReadResponse | None)
 async def get_daily_exercise(exercise_crud: ExerciseCrudSession):
     return await exercise_crud.get_daily_exercise()

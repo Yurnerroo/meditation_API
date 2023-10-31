@@ -41,3 +41,8 @@ class PostAdminCreate(PostAdminBase):
 
 class PostAdminUpdate(PostAdminBase):
     pass
+
+
+class PostFilter(BaseModel):
+    owner: int | None = Field(None, example=1, description="Post author's ID")
+    title: str | None = Field(None, example="Title", description="Post title")
