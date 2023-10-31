@@ -5,14 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from api.deps import (
-    CurrentActiveUser,
     CurrentUser,
-    UserCrudSession,
+    UserCrudSession, CurrentSuperUser,
 )
 from auth.jwthandler import create_access_token
 from db.schemas.user_schema import UserCreate, UserRead, UserReadResponse
 from schemas import token as token_schema
-from schemas.permission_schema import UserPermissions
 from settings import settings
 
 router = APIRouter()
@@ -22,6 +20,7 @@ router = APIRouter()
 async def create_user(
     user: UserCreate,
     user_crud: UserCrudSession,
+    current_user: CurrentSuperUser,
 ):
     """
     Create new user.

@@ -5,6 +5,7 @@ from datetime import datetime
 from email_validator import validate_email
 from pydantic import BaseModel, EmailStr, Field, validator
 
+from db.models.user import UserTypesEnum
 from utils.partial import optional
 
 
@@ -15,32 +16,14 @@ def password_size(v: str):
 
 
 class UserBase(BaseModel):
-    username: str = Field(..., min_length=3, max_length=25)
-    email: EmailStr
-    full_name: str = Field(..., min_length=3, max_length=50)
-    is_active: bool | None = False
-    is_super_user: bool | None = False
-    is_approved: bool | None = False
-    created_by_user_id: int | None = None
+    name: str = Field(..., min_length=3, max_length=25)
+    avatar: str | None = None
+    user_type: str | None = None
 
-    @validator("username")
-    def username_alphanumeric(cls, v):
+    @validator("name")
+    def name_alphanumeric(cls, v):
         assert v.isalnum(), "must be alphanumeric"
         return v
-
-    @validator("email")
-    def email_validator(cls, v):
-        email = validate_email(v, check_deliverability=False)
-        return email.normalized
-
-
-class UserReadShort(BaseModel):
-    id: int
-    username: str = Field(..., min_length=3, max_length=25)
-    created_by_user_id: int | None = None
-
-    class Config:
-        orm_mode = True
 
 
 class UserRead(UserBase):
@@ -60,22 +43,13 @@ class UserCreate(UserBase):
 
 # All these fields are optional
 class UserUpdate(BaseModel):
-    username: str | None = None
-    email: EmailStr | None = None
-    full_name: str | None = None
-    is_active: bool | None = False
-    is_approved: bool | None = False
+    name: str | None = None
     password: str | None = None
 
-    @validator("username")
-    def username_alphanumeric(cls, v):
+    @validator("name")
+    def name_alphanumeric(cls, v):
         assert v.isalnum(), "must be alphanumeric"
         return v
-
-    @validator("email")
-    def email_validator(cls, v):
-        email = validate_email(v, check_deliverability=False)
-        return email.normalized
 
     class Config:
         orm_mode = True
@@ -91,53 +65,11 @@ class UserUpdateMe(BaseModel):
     _validate_password = validator("password", allow_reuse=True)(password_size)
 
 
-class UserInDB(UserRead):
-    password_hash: str
-
-
-class JournalistCreate(BaseModel):
-    username: str = Field(..., min_length=3, max_length=25)
-    email: EmailStr
-    full_name: str = Field(..., min_length=3, max_length=50)
-    password: str = Field(..., min_length=8, max_length=32)
-
-
-class UserDetailSchema(BaseModel):
-    id: int
-    username: str
-    full_name: str | None
-    email: str | None
-    is_active: bool
-    is_super_user: bool
-    is_approved: bool
-    created_by_user_id: int | None
-    created_by_user_name: str | None
-    date_joined: str
-    group_id: int | None
-    group_name: str | None
-
-
 class UserFilter(BaseModel):
-    username: str | None = Field(
-        None, example="User name", description="Searched substring in the user name"
+    name: str | None = Field(
+        None, example="Username", description="Searched substring in the user name"
     )
-    full_username: str | None = Field(
-        None,
-        example="User full name",
-        description="Searched substring in the user full name",
+    avatar: str | None = Field(
+        None, example="Avatar image link", description="Searched substring in the avatar link"
     )
-    email: str | None = Field(
-        None, example="Users email ", description="Searched substring in the user email"
-    )
-    group_id: int | None = Field(None, example="3", description="Group ID")
-    is_approved: bool | None = Field(None, example="1", description="Is approved")
-    is_active: bool | None = Field(None, example="1", description="Is active")
-    created_by_user: int | None = Field(
-        None, example="1", description="Created by user id"
-    )
-    start_date: datetime | None = Field(
-        None, example="2021-01-30 01:20:00", description="Format: YYYY-MM-DD HH:MM:SS"
-    )
-    end_date: datetime | None = Field(
-        None, example="2021-01-30 01:20:00", description="Format: YYYY-MM-DD HH:MM:SS"
-    )
+    user_type: UserTypesEnum | None = Field(None, example="user", description="User Type")

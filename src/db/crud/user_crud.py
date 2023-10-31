@@ -12,7 +12,7 @@ from sqlalchemy.sql import and_, or_
 
 from auth.users import get_password_hash, verify_password
 from db.crud.base_crud import BaseCrud
-from db.models.user import User
+from db.models.user import User, UserTypesEnum
 from db.schemas.user_schema import UserCreate, UserUpdate
 
 logger = logging.Logger(__name__)
@@ -27,7 +27,7 @@ class UserCrud(BaseCrud[User, UserCreate, UserUpdate]):
         return await super().get(id_=id_)
 
     async def get_by_name(self, *, name: str) -> User | None:
-        stmt = select(User).where(User.username == name)  # type: ignore
+        stmt = select(User).where(User.name == name)  # type: ignore
         result = await self.db.execute(stmt)
 
         return result.scalar_one_or_none()
@@ -35,14 +35,11 @@ class UserCrud(BaseCrud[User, UserCreate, UserUpdate]):
     async def create_user(self, user: UserCreate) -> User | dict[str, Any]:
         try:
             db_user = User(
-                username=user.username,
+                name=user.name,
+                avatar=user.avatar,
+                user_type=user.user_type,
                 password_hash=get_password_hash(user.password),
-                email=user.email,
-                full_name=user.full_name,
-                is_active=user.is_active,
-                is_super_user=user.is_super_user,
-                is_approved=user.is_approved,
-                created_by_user_id=user.created_by_user_id,
+
             )
             self.db.add(db_user)
             await self.db.flush()
@@ -84,4 +81,8 @@ class UserCrud(BaseCrud[User, UserCreate, UserUpdate]):
             return None
 
         return user
+
+    @staticmethod
+    def is_superuser(user: User) -> bool:
+        return user.user_type == UserTypesEnum.ADMIN
 

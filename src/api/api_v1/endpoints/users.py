@@ -12,15 +12,12 @@ from api.deps import (
 )
 from db.models.user import User
 from db.schemas.user_schema import (
-    UserDetailSchema,
     UserFilter,
     UserReadResponse,
     UserUpdate,
     UserUpdateMe,
 )
 from schemas.common_schema import IOrderEnum
-from schemas.permission_schema import UserPermissions
-from schemas.statistic_schema import UsersByGroup
 
 router = APIRouter()
 FORBIDDEN = HTTPException(
@@ -28,7 +25,7 @@ FORBIDDEN = HTTPException(
 )
 
 
-@router.get("/{user_id}", response_model=UserDetailSchema | None)
+@router.get("/{user_id}")
 async def read_user(
     user_id: int,
     user_crud: UserCrudSession,
@@ -37,24 +34,23 @@ async def read_user(
     Get user by id.
     """
 
-    user = await user_crud.get_detailed(id_=user_id)
+    user = await user_crud.get(id_=user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
     return user
 
 
-@router.get("/paginated/", response_model=Page[UserDetailSchema] | None)
+@router.get("/paginated/")
 async def read_users(
     user_crud: UserCrudSession,
     users_filter: UserFilter = Depends(),
     params: Params = Depends(),
-) -> Page[UserDetailSchema] | None:
+):
     """
     Retrieve users.
     """
     result = await user_crud.get_multi_paginated_ordered(
         params=params,
-        order_by=User.date_joined,
         order=IOrderEnum.descendent,
         filter_exp=users_filter,
     )
@@ -64,7 +60,7 @@ async def read_users(
     return result
 
 
-@router.get("/search_users_paginated/", response_model=Page[UserDetailSchema] | None)
+@router.get("/search_users_paginated/")
 async def search_users_paginated(
     searched_substr: str,
     user_crud: UserCrudSession,
@@ -78,7 +74,7 @@ async def search_users_paginated(
     )
 
 
-@router.get("/", response_model=list[UserDetailSchema] | None)
+@router.get("/")
 async def get_all_users(
     user_crud: UserCrudSession,
 ):
@@ -86,14 +82,14 @@ async def get_all_users(
     Retrieve all users.
     """
 
-    return await user_crud.get_all_users_ordered(order_by=User.username)
+    return await user_crud.get_all_users_ordered(order_by=User.name)
 
 
-@router.get("/me/", response_model=UserDetailSchema)
+@router.get("/me/")
 async def read_user_me(
     user_crud: UserCrudSession,
     current_user: CurrentUser,
-) -> UserDetailSchema | None:
+):
     """
     Get current user.
     """

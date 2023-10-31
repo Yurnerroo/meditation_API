@@ -7,14 +7,10 @@ from sqlalchemy import pool
 from alembic import context
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from src.db.models.match import Match
-from src.db.models.player import Player
+from src.db.models.exercise import Exercise
+from src.db.models.post import Post
 from src.db.models.base import Base
-from src.db.models.group import Group
-from src.db.models.groups_permission import GroupsPermission
-from src.db.models.permission import Permission
 from src.db.models.user import User
-from src.db.models.users_group import UsersGroup
 from src.settings import settings
 
 # this is the Alembic Config object, which provides
