@@ -7,5 +7,4 @@ env/
 venv/
 .venv/
 *.db
-.env
 .coverage
