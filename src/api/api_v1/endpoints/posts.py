@@ -21,7 +21,7 @@ async def get_post_by_id(
     post_id: int,
     post_crud: PostCrudSession,
 ):
-    post = await post_crud.get(id_=post_id)
+    post = await post_crud.get_post(post_id=post_id)
     if not post:
         raise POST_NOT_FOUND
     return PostRead.from_orm(post)
