@@ -39,18 +39,21 @@ class ExerciseCrud(BaseCrud[Exercise, ExerciseCreate, ExerciseUpdate]):
         self,
         owner: int,
     ) -> list[ExerciseReadResponse]:
-        query = select(self.model).where(
-            self.model.owner == owner,  # type: ignore
-            self.model.time > datetime.now(),  # type: ignore
+        query = (
+            select(self.model)
+            .where(
+                self.model.owner == owner,  # type: ignore
+            )
+            .order_by(desc(self.model.time))
         )
 
-        result = (await self.db.execute(query)).all()
+        result = (await self.db.execute(query)).fetchall()
         return [
             ExerciseReadResponse(
-                id=exercise[0],
-                text=exercise[1],
-                photo=exercise[2],
-                time=exercise[3],
+                id=exercise[0].id,
+                text=exercise[0].text,
+                photo=exercise[0].photo,
+                time=exercise[0].time,
             )
             for exercise in result
         ]
@@ -67,8 +70,8 @@ class ExerciseCrud(BaseCrud[Exercise, ExerciseCreate, ExerciseUpdate]):
         )
         result = (await self.db.execute(query)).first()
         return ExerciseReadResponse(
-            id=result[0],
-            text=result[1],
-            photo=result[2],
-            time=result[3],
+            id=result[0].id,
+            text=result[0].text,
+            photo=result[0].photo,
+            time=result[0].time,
         ) if result else None

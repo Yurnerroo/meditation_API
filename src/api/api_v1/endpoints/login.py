@@ -5,11 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from api.deps import (
-    CurrentUser,
     UserCrudSession,
 )
 from auth.jwthandler import create_access_token
-from db.schemas.user_schema import UserCreate, UserRead, UserReadResponse
+from db.schemas.user_schema import UserCreate, UserReadResponse
 from schemas import token as token_schema
 from settings import settings
 

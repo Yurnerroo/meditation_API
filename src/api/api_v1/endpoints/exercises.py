@@ -27,10 +27,11 @@ async def get_exercise_by_id(
 
 @router.post("/")
 async def create_exercise(
+    current_user: CurrentActiveUser,
     exercise: ExerciseCreate,
     exercise_crud: ExerciseCrudSession,
 ):
-    return await exercise_crud.create(exercise=exercise)
+    return await exercise_crud.create_exercise(exercise_in=exercise, current_user=current_user)
 
 
 @router.put("/{exercise_id}")

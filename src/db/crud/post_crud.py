@@ -2,11 +2,13 @@ from typing import Any
 
 from sqlalchemy import Select, select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 
 from db.crud.base_crud import BaseCrud
 from db.models.post import Post
 from db.models.user import User
 from db.schemas.post_schema import PostCreate, PostUpdate, PostAdminCreate, PostFilter, PostReadResponse
+from db.schemas.user_schema import UserRead
 from schemas.common_schema import IOrderEnum
 
 
@@ -14,6 +16,27 @@ class PostCrud(BaseCrud[Post, PostCreate, PostUpdate]):
     def __init__(self, db_session: AsyncSession):
         self.db = db_session
         super().__init__(model=Post, db_session=db_session)
+
+    async def get_post(self, post_id: int) -> PostReadResponse | None:
+        owner = aliased(User, name="owner")
+        query = (
+            select(self.model, owner)
+            .join(owner, owner.id == self.model.owner)  # type: ignore
+            .where(self.model.id == post_id)
+        )
+        result = (await self.db.execute(query)).one_or_none()
+        return PostReadResponse(
+            id=result[0].id,
+            title=result[0].title,
+            photo=result[0].photo,
+            description=result[0].description,
+            owner=UserRead(
+                id=result[1].id,
+                name=result[1].name,
+                avatar=result[1].avatar,
+                user_type=result[1].user_type,
+            )
+        ) if result else None
 
     async def create_post(
         self,
@@ -53,7 +76,7 @@ class PostCrud(BaseCrud[Post, PostCreate, PostUpdate]):
         posts_filter: PostFilter,
         order_by: Any = None,
     ) -> list[PostReadResponse] | None:
-        query = self._get_all_posts_query(
+        query = await self._get_all_posts_query(
             posts_filter=posts_filter,
             order_by=order_by,
             order=IOrderEnum.descendent,
@@ -65,7 +88,7 @@ class PostCrud(BaseCrud[Post, PostCreate, PostUpdate]):
                 title=row[0].title,
                 photo=row[0].photo,
                 description=row[0].description,
-                owner=row[0].owner,
+                owner=UserRead(**row[1])
             ) for row in db_result
         ] if db_result else None
 
@@ -75,8 +98,10 @@ class PostCrud(BaseCrud[Post, PostCreate, PostUpdate]):
             order_by: Any,
             order: IOrderEnum | None = None,
     ) -> Select:
+        owner = aliased(User, name="owner")
         query = (
-            select(User)
+            select(Post, owner)
+            .join(User, User.id == Post.owner)  # type: ignore
             .where(
                 and_(
                     or_(not posts_filter.owner, Post.owner == posts_filter.owner),
